@@ -4,18 +4,34 @@ module.exports.getCards = (req, res) => {
   Card.find({})
     .then((data) => {
       if (data.length === 0) {
-        return res.status(404).send({ message: 'nobody here' });
+        return res.status(200).send(data);
       }
       return res.send({ data });
     })
-    .catch((e) => res.status(500).send({ message: e.message }));
+    .catch((e) => {
+      if (e.name === e.ValidationError) {
+        return res.status(400).send({ message: e.message });
+      }
+      if (e.name === e.CastError) {
+        return res.status(400).send({ message: e.message });
+      }
+      return res.status(500).send({ message: e.message });
+    });
 };
 
 module.exports.createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((data) => res.status(200).send({ data }))
-    .catch((e) => res.status(500).send({ message: e.message }));
+    .catch((e) => {
+      if (e.name === e.ValidationError) {
+        return res.status(400).send({ message: e.message });
+      }
+      if (e.name === e.CastError) {
+        return res.status(400).send({ message: e.message });
+      }
+      return res.status(500).send({ message: e.message });
+    });
 };
 
 module.exports.delCard = (req, res) => {
@@ -24,7 +40,15 @@ module.exports.delCard = (req, res) => {
       if (!data) {
         return res.status(404).send({ message: 'nobody here' });
       }
-      return res.status(404).send({ data });
+      return res.status(200).send({ data });
     })
-    .catch((e) => res.status(500).send({ message: e.message }));
+    .catch((e) => {
+      if (e.name === e.ValidationError) {
+        return res.status(400).send({ message: e.message });
+      }
+      if (e.name === e.CastError) {
+        return res.status(400).send({ message: e.message });
+      }
+      return res.status(500).send({ message: e.message });
+    });
 };

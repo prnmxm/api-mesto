@@ -1,11 +1,11 @@
 {
-  "name": "bd",
-  "version": "1.0.0",
-  "description": "",
+  "name": "s13",
+  "version": "1.0.1",
+  "description": "REST API Mesto",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env PORT=3000 nodemon app.js",
-    "start": "cross-env PORT=3000 node app.js"
+    "dev": "nodemon app.js",
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
