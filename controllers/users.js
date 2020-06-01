@@ -9,10 +9,10 @@ module.exports.getUsers = (req, res) => {
       return res.status(200).send({ data });
     })
     .catch((e) => {
-      if (e.name === e.ValidationError) {
+      if (e.name === 'ValidationError') {
         return res.status(400).send({ message: e.message });
       }
-      if (e.name === e.CastError) {
+      if (e.name === 'CastError') {
         return res.status(400).send({ message: e.message });
       }
       return res.status(500).send({ message: e.message });
@@ -27,10 +27,10 @@ module.exports.getUser = (req, res) => {
       return res.status(200).send(data);
     })
     .catch((e) => {
-      if (e.name === e.ValidationError) {
+      if (e.name === 'ValidationError') {
         return res.status(400).send({ message: e.message });
       }
-      if (e.name === e.CastError) {
+      if (e.name === 'CastError') {
         return res.status(400).send({ message: e.message });
       }
       return res.status(500).send({ message: e.message });
@@ -41,10 +41,10 @@ module.exports.createUser = (req, res) => {
   User.create({ name, about, avatar })
     .then((data) => res.send({ data }))
     .catch((e) => {
-      if (e.name === e.ValidationError) {
+      if (e.name === 'ValidationError') {
         return res.status(400).send({ message: e.message });
       }
-      if (e.name === e.CastError) {
+      if (e.name === 'CastError') {
         return res.status(400).send({ message: e.message });
       }
       return res.status(500).send({ message: e.message });
