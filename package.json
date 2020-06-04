@@ -1,6 +1,6 @@
 {
   "name": "s13",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "REST API Mesto",
   "main": "index.js",
   "scripts": {
