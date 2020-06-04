@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 require('dotenv').config();
+
 const { NODE_ENV } = process.env;
 const app = express();
 const { PORT = 3000 } = process.env;

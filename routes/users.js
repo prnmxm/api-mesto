@@ -4,8 +4,8 @@ const {
 } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 
-routes.post('/login', login);
-routes.post('/register', createUser);
+routes.post('/signin', login);
+routes.post('/signup', createUser);
 
 routes.get('/users', auth, getUsers);
 routes.get('/users/:id', auth, getUser);
