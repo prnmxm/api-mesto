@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const validatorV = require('validator');
 const bcrypt = require('bcryptjs');
 
-const { NODE_ENV } = process.env;
 
 const userSchema = new mongoose.Schema({
   email: {

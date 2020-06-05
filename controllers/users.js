@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
 
 function errorHandler(res, e) {
   if (e.name === 'ValidationError') {
@@ -49,7 +48,10 @@ module.exports.createUser = (req, res) => {
     }))
     .then((data) => res.send({ data: data.omitPrivate() }))
     .catch((e) => {
-      errorHandler(res, e);
+      if (e.code === 11000) {
+        return res.status(404).send({ message: 'user already exists' });
+      }
+      return errorHandler(res, e);
     });
 };
 module.exports.login = (req, res) => {
