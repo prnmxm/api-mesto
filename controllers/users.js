@@ -45,7 +45,7 @@ module.exports.createUser = (req, res) => {
   } = req.body;
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
-      name, about, avatar, email, password: NODE_ENV === 'production' ? hash : password,
+      name, about, avatar, email, password: hash,
     }))
     .then((data) => res.send({ data: data.omitPrivate() }))
     .catch((e) => {
@@ -56,7 +56,7 @@ module.exports.login = (req, res) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
-      const secret = NODE_ENV === 'production' ? JWT_SECRET : 'dev';
+      const secret = 'cf6c1b2ae5c40fda66aa47ca2c40bf443767d43fcab0e7c563215dacd67f2534';
       const token = jwt.sign({ _id: user._id }, secret, {
         expiresIn: '7d',
       });

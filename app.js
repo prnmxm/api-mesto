@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const { NODE_ENV } = process.env;
 const app = express();
 const { PORT = 3000 } = process.env;
 const userRoutes = require('./routes/users');
@@ -24,5 +23,4 @@ app.use('/', cardsRoutes);
 app.all('*', (req, res) => res.status(404).json({ message: 'Запрашиваемый ресурс не найден' }));
 app.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
-  console.log(NODE_ENV);
 });

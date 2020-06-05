@@ -41,19 +41,14 @@ const userSchema = new mongoose.Schema({
     },
   },
 });
-async function compare(ent, out) {
-  if (NODE_ENV === 'production') {
-    return bcrypt.compare(ent, out);
-  }
-  return ent === out;
-}
+
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('Неправильная почта или пароль'));
       }
-      return compare(password, user.password)
+      return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {
             return Promise.reject(new Error('Неправильная почта или пароль'));
