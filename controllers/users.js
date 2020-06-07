@@ -1,26 +1,12 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const errorHandler = require('../error/error');
 
-
-function errorHandler(res, e) {
-  if (e.name === 'ValidationError') {
-    return res.status(400).send({ message: e.message });
-  }
-  if (e.name === 'CastError') {
-    return res.status(400).send({ message: e.message });
-  }
-  return res.status(500).send({ message: e.message });
-}
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((data) => {
-      if (data.length === 0) {
-        return res.status(404).send({ message: 'nobody here' });
-      }
-      return res.status(200).send({ data });
-    })
+    .then((data) => res.status(200).send({ data }))
     .catch((e) => {
       errorHandler(res, e);
     });
@@ -49,7 +35,7 @@ module.exports.createUser = (req, res) => {
     .then((data) => res.send({ data: data.omitPrivate() }))
     .catch((e) => {
       if (e.code === 11000) {
-        return res.status(404).send({ message: 'user already exists' });
+        return res.status(409).send({ message: 'user already exists' });
       }
       return errorHandler(res, e);
     });
@@ -63,12 +49,12 @@ module.exports.login = (req, res) => {
         expiresIn: '7d',
       });
       res.cookie('jwt', token, {
-        maxAge: 10080,
+        maxAge: 604800,
         httpOnly: true,
         sameSite: true,
       }).end();
     })
     .catch((e) => {
-      res.status(401).send({ message: e.message });
+      res.status(400).send({ message: e.message });
     });
 };
