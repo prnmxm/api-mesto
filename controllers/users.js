@@ -28,6 +28,9 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
+  // if (!password || password.length < 6) {
+  //   return res.status(200).send({ message: 'password' });
+  // }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,

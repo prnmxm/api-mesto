@@ -1,4 +1,4 @@
-module.exports.errorHandler = (res, e) => {
+module.exports = function errorHandler(res, e) {
   if (e.name === 'ValidationError') {
     return res.status(400).send({ message: e.message });
   }
