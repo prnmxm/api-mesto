@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const ErrorNotFound = require('../errors/ErrorNotFound');
 const ErrorUnauthorized = require('../errors/ErrorUnauthorized');
+const ErrorBadRequest = require('../errors/ErrorBadRequest');
 
 module.exports.getCards = (req, res, next) => {
   Card.find({})
@@ -12,7 +13,14 @@ module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((data) => res.status(200).send({ data }))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        const error = new ErrorBadRequest(err.message.replace(/card validation failed: /, ''));
+        next(error);
+      } else {
+        next();
+      }
+    });
 };
 
 module.exports.delCard = (req, res, next) => {

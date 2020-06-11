@@ -4,6 +4,7 @@ const User = require('../models/user');
 
 const ErrorNotFound = require('../errors/ErrorNotFound');
 const ErrorConflict = require('../errors/ErrorConflict');
+const ErrorBadRequest = require('../errors/ErrorBadRequest');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -34,6 +35,9 @@ module.exports.createUser = (req, res, next) => {
       if (err.code === 11000) {
         const error = new ErrorConflict('Пользователь с такой почтой существует.');
         next(error);
+      } else if (err.name === 'ValidationError') {
+        const error = new ErrorBadRequest(err.message.replace(/card validation failed: /, ''));
+        next(error);
       } else {
         next();
       }
@@ -48,7 +52,7 @@ module.exports.login = (req, res, next) => {
         expiresIn: '7d',
       });
       res.cookie('jwt', token, {
-        maxAge: 604800,
+        maxAge: 24 * 60 * 60 * 1000 * 7,
         httpOnly: true,
         sameSite: true,
       }).end();

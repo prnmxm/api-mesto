@@ -7,7 +7,7 @@ const auth = require('../middlewares/auth');
 
 routes.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().min(1).required().email({
+    email: Joi.string().required().email({
       minDomainSegments: 2,
       tlds: true,
     }),
@@ -16,7 +16,7 @@ routes.post('/signin', celebrate({
 }), login);
 routes.post('/signup', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().min(1).required().email({
+    email: Joi.string().required().email({
       minDomainSegments: 2,
       tlds: true,
     }),
