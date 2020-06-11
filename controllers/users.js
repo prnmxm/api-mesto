@@ -1,49 +1,45 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
-const errorHandler = require('../error/error');
 
+const ErrorNotFound = require('../errors/ErrorNotFound');
+const ErrorConflict = require('../errors/ErrorConflict');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((data) => res.status(200).send({ data }))
-    .catch((e) => {
-      errorHandler(res, e);
-    });
+    .catch(next);
 };
 
-module.exports.getUser = (req, res) => {
+module.exports.getUser = (req, res, next) => {
   User.findById(req.params.id)
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'user not found' });
+        throw new ErrorNotFound('Пользователь не найден');
       }
       return res.status(200).send(data);
     })
-    .catch((e) => {
-      errorHandler(res, e);
-    });
+    .catch(next);
 };
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  // if (!password || password.length < 6) {
-  //   return res.status(200).send({ message: 'password' });
-  // }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
     .then((data) => res.send({ data: data.omitPrivate() }))
-    .catch((e) => {
-      if (e.code === 11000) {
-        return res.status(409).send({ message: 'user already exists' });
+    .catch((err) => {
+      if (err.code === 11000) {
+        const error = new ErrorConflict('Пользователь с такой почтой существует.');
+        next(error);
+      } else {
+        next();
       }
-      return errorHandler(res, e);
     });
 };
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   User.findUserByCredentials(email, password)
     .then((user) => {
@@ -57,7 +53,5 @@ module.exports.login = (req, res) => {
         sameSite: true,
       }).end();
     })
-    .catch((e) => {
-      res.status(400).send({ message: e.message });
-    });
+    .catch(next);
 };
