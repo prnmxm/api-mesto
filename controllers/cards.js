@@ -1,54 +1,38 @@
 const Card = require('../models/card');
+const ErrorNotFound = require('../errors/ErrorNotFound');
+const ErrorUnauthorized = require('../errors/ErrorUnauthorized');
+const ErrorBadRequest = require('../errors/ErrorBadRequest');
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
-    .then((data) => {
-      if (data.length === 0) {
-        return res.status(200).send(data);
-      }
-      return res.send({ data });
-    })
-    .catch((e) => {
-      if (e.name === 'ValidationError') {
-        return res.status(400).send({ message: e.message });
-      }
-      if (e.name === 'CastError') {
-        return res.status(400).send({ message: e.message });
-      }
-      return res.status(500).send({ message: e.message });
-    });
+    .then((data) => res.send({ data }))
+    .catch(next);
 };
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
     .then((data) => res.status(200).send({ data }))
-    .catch((e) => {
-      if (e.name === 'ValidationError') {
-        return res.status(400).send({ message: e.message });
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        const error = new ErrorBadRequest(err.message.replace(/card validation failed: /, ''));
+        next(error);
+      } else {
+        next();
       }
-      if (e.name === 'CastError') {
-        return res.status(400).send({ message: e.message });
-      }
-      return res.status(500).send({ message: e.message });
     });
 };
 
-module.exports.delCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+module.exports.delCard = (req, res, next) => {
+  Card.findById(req.params.id)
     .then((data) => {
       if (!data) {
-        return res.status(404).send({ message: 'nobody here' });
+        throw new ErrorNotFound('Карточка не существует');
       }
-      return res.status(200).send({ data });
+      if (req.user._id !== data.owner.toString()) {
+        throw new ErrorUnauthorized('Не твоя');
+      }
+      return data.remove().then(res.status(200).send({ data }));
     })
-    .catch((e) => {
-      if (e.name === 'ValidationError') {
-        return res.status(400).send({ message: e.message });
-      }
-      if (e.name === 'CastError') {
-        return res.status(400).send({ message: e.message });
-      }
-      return res.status(500).send({ message: e.message });
-    });
+    .catch(next);
 };
