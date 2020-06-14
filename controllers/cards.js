@@ -1,6 +1,6 @@
 const Card = require('../models/card');
 const ErrorNotFound = require('../errors/ErrorNotFound');
-const ErrorUnauthorized = require('../errors/ErrorUnauthorized');
+const ErrorForbidden = require('../errors/ErrorForbidden');
 const ErrorBadRequest = require('../errors/ErrorBadRequest');
 
 module.exports.getCards = (req, res, next) => {
@@ -30,7 +30,7 @@ module.exports.delCard = (req, res, next) => {
         throw new ErrorNotFound('Карточка не существует');
       }
       if (req.user._id !== data.owner.toString()) {
-        throw new ErrorUnauthorized('Не твоя');
+        throw new ErrorForbidden('Не твоя');
       }
       return data.remove().then(res.status(200).send({ data }));
     })

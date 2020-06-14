@@ -3,7 +3,7 @@ const { celebrate, Joi } = require('celebrate');
 const { getCards, delCard, createCard } = require('../controllers/cards');
 const auth = require('../middlewares/auth');
 const headers = require('../headers/headers');
-
+const LinkValidaton = require('../errors/LinkValidation');
 
 routes.get('/cards', celebrate({ ...headers }), auth, getCards);
 routes.delete('/cards/:id', celebrate({
@@ -12,5 +12,11 @@ routes.delete('/cards/:id', celebrate({
   }),
   ...headers,
 }), auth, delCard);
-routes.post('/cards', celebrate({ ...headers }), auth, createCard);
+routes.post('/cards', celebrate({
+  ...headers,
+  body: Joi.object().keys({
+    name: Joi.string().min(2).required(),
+    link: Joi.string().required().custom(LinkValidaton, 'link validation'),
+  }),
+}), auth, createCard);
 module.exports = routes;
