@@ -4,6 +4,8 @@ const {
   getUsers, getUser, createUser, login,
 } = require('../controllers/users');
 const auth = require('../middlewares/auth');
+const headers = require('../headers/headers');
+
 
 routes.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -27,10 +29,11 @@ routes.post('/signup', celebrate({
   }),
 }), createUser);
 
-routes.get('/users', auth, getUsers);
+routes.get('/users', celebrate({ ...headers }), auth, getUsers);
 routes.get('/users/:id', celebrate({
   params: Joi.object().keys({
     id: Joi.string().alphanum().length(24),
+    ...headers,
   }),
 }), auth, getUser);
 
