@@ -15,7 +15,7 @@ routes.delete('/cards/:id', celebrate({
 routes.post('/cards', celebrate({
   ...headers,
   body: Joi.object().keys({
-    name: Joi.string().min(2).required(),
+    name: Joi.string().min(2).max(30).required(),
     link: Joi.string().required().custom(LinkValidaton, 'link validation'),
   }),
 }), auth, createCard);
